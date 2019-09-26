@@ -69,10 +69,13 @@ class MainWindow(QWidget):
     '''
     Периодически опрашивает источник данных провайдера и отображает полученный контент
     '''
-    #print("onTimer()")
     content = self.contentProvider.getContent(START, LENGTH)
-    #print("CONTENT:\n{}\n\n".format(content))
-    self.memFrame.newContent(content, )
+  
+    if content != None:
+      self.memFrame.newContent(content, )
+
+
+
 
 if __name__ == "__main__":
   try:
