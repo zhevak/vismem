@@ -1,4 +1,6 @@
-vismem -- visualizer of memory (визуадизатор памяти)
+Visualizer of memory.
 
-Предназначен для представления содержимого (контента) памяти в графическом виде.
+This program sends UDP-requests to a host which answers to program. Next, the program visualizes the received content as a colorized rectangle.
+
+Визуадизатор памяти предназначен для представления содержимого (контента) памяти в графическом виде.
 
