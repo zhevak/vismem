@@ -30,12 +30,16 @@ class MemFrame(QWidget):
 
   def __init__(self, parent=None):
     QWidget.__init__(self, parent)
-    self.content = None
-    self.setFixedSize(X0 + IMAGEWIDTH + 35, Y0 + IMAGEHEIGHT + 20)
+    self.content     = None
+    self.prevContent = None
 
-    self.address = ""
     self.mode = 1
     self.modeSelector = {0:self.showNothing, 1:self.showInColor, 2:self.showInBw, 3:self.showChanges, 4:self.showUsing}
+
+    self.address = ""
+
+    self.setFixedSize(X0 + IMAGEWIDTH + 35, Y0 + IMAGEHEIGHT + 20)
+
 
 
   def paintEvent(self, e):
@@ -113,6 +117,7 @@ class MemFrame(QWidget):
     Принимает новое значение содержимого памяти
     '''
     self.address = "0x{:08X}".format(startaddress)
+    self.prevContent = bytearray(self.content)
     self.content = content
     self.update()
 
@@ -152,7 +157,23 @@ class MemFrame(QWidget):
 
 
   def showChanges(self, qp):
-    pass
+    if self.prevContent == None:
+      for y in range(256):
+        for x in range(256):
+          if self.content[y * 256 + x] == 0xFF:
+            qp.setPen(Qt.black)
+          else:
+            qp.setPen(Qt.lightGray)
+    else:
+      for y in range(256):
+        for x in range(256):
+          if (self.content[y * 256 + x]) == (self.prevContent[y * 256 + x]):
+            print()
+            qp.setPen(Qt.black)
+          else:
+            qp.setPen(Qt.lightGray)
+
+    qp.drawPoint(X0 + x, Y0 + y)
 
 
   def showUsing(self, qp):

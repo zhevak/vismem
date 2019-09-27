@@ -159,24 +159,24 @@ class MainWindow(QWidget):
 
   def onColor(self):
     if self.sender().isChecked():
-      print("Цвет")
+      #print("Цвет")
       self.memFrame.setMode(1)
     
   def onBw(self):
     if self.sender().isChecked():
-      print("Черно-белый")
+      #print("Черно-белый")
       self.memFrame.setMode(2)
 
     
   def onChanges(self):
     if self.sender().isChecked():
-      print("Изменения")
+      #print("Изменения")
       self.memFrame.setMode(3)
 
     
   def onUsing(self):
     if self.sender().isChecked():
-      print("Пользование")
+      #print("Пользование")
       self.memFrame.setMode(4)
 
     
