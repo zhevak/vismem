@@ -21,10 +21,12 @@ IMAGEWIDTH  = 256
 IMAGEHEIGHT = 256
 
 
+
 class MemFrame(QWidget):
   '''
   Квадрат изображения
   '''
+
 
   def __init__(self, parent=None):
     QWidget.__init__(self, parent)
@@ -32,6 +34,8 @@ class MemFrame(QWidget):
     self.setFixedSize(X0 + IMAGEWIDTH + 35, Y0 + IMAGEHEIGHT + 20)
 
     self.address = ""
+    self.mode = 1
+    self.modeSelector = {0:self.showNothing, 1:self.showInColor, 2:self.showInBw, 3:self.showChanges, 4:self.showUsing}
 
 
   def paintEvent(self, e):
@@ -96,26 +100,7 @@ class MemFrame(QWidget):
       return
   
     try:
-
-      for y in range(256):
-        for x in range(256):
-          c = self.content[y * 256 + x]
-          r = (c & 0xE0)
-          g = (c & 0x1C) << 3
-          b = (c & 0x03) << 6
-          qp.setPen(QPen(QColor(r, g, b)))
-          qp.drawPoint(X0 + x, Y0 + y)
-
-      '''
-      Это ч/б изображение памяти
-      qp.setPen(Qt.darkGray)
-
-      for y in range(256):
-        for x in range(256):
-          if self.content[y * 256 + x] != 0x00:
-            qp.drawPoint(x, y)
-      '''      
-
+      self.modeSelector.get(self.mode, self.showNothing)(qp)
     except IndexError:
       pass
 
@@ -130,6 +115,53 @@ class MemFrame(QWidget):
     self.address = "0x{:08X}".format(startaddress)
     self.content = content
     self.update()
+
+
+
+  def setMode(self, mode):
+    self.mode = mode
+
+
+  def showInColor(self, qp):
+    '''
+    Это цветное изображение памяти
+    '''
+    for y in range(256):
+      for x in range(256):
+        c = self.content[y * 256 + x]
+        r = (c & 0xE0)
+        g = (c & 0x1C) << 3
+        b = (c & 0x03) << 6
+        qp.setPen(QPen(QColor(r, g, b)))
+        qp.drawPoint(X0 + x, Y0 + y)
+
+
+
+  def showInBw(self, qp):
+    '''
+    Это ч/б изображение памяти
+    '''
+    for y in range(256):
+      for x in range(256):
+        if self.content[y * 256 + x] == 0x00:
+          qp.setPen(Qt.black)
+        else:
+          qp.setPen(Qt.lightGray)
+        
+        qp.drawPoint(X0 + x, Y0 + y)
+
+
+  def showChanges(self, qp):
+    pass
+
+
+  def showUsing(self, qp):
+    pass
+
+
+  def showNothing(self, qp):
+    pass
+
 
 
 

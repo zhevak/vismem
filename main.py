@@ -7,7 +7,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QHBoxLayout, QFrame, QPushButton)
+from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QRadioButton, QButtonGroup)
 from PyQt5.QtGui     import QFont
 from PyQt5.QtCore    import QTimer
 
@@ -47,6 +47,7 @@ LENGTH = 0x10000
 #START = 0x20020000
 
 
+
 class MainWindow(QWidget):
 
   def __init__(self, contentProvider):
@@ -57,6 +58,7 @@ class MainWindow(QWidget):
     QToolTip.setFont(QFont("SansSerif", 8))
 
     self.startaddress = 0x10000000
+    self.mode = 0
 
     self.contentProvider = contentProvider
     self.memFrame = MemFrame()
@@ -71,7 +73,26 @@ class MainWindow(QWidget):
     self.btn2001.clicked.connect(self.on2001)
     self.btn2002.clicked.connect(self.on2002)
     
+    self.rbColor   = QRadioButton("Цветное")
+    self.rbBw      = QRadioButton("Чёрно/белое")
+    self.rbChanges = QRadioButton("Изменения")
+    self.rbUsing   = QRadioButton("Пользование")
+    self.rbColor.setChecked(True)
+
+
+    self.rbg = QButtonGroup()
+    self.rbg.addButton(self.rbColor)
+    self.rbg.addButton(self.rbBw)
+    self.rbg.addButton(self.rbChanges)
+    self.rbg.addButton(self.rbUsing)
+
+    self.rbColor.toggled.connect(self.onColor)
+    self.rbBw.toggled.connect(self.onBw)
+    self.rbChanges.toggled.connect(self.onChanges)
+    self.rbUsing.toggled.connect(self.onUsing)
     
+    
+    # Размещение виджетов на морде
     vbox1 = QVBoxLayout()
     vbox1.addWidget(self.memFrame)
     
@@ -83,9 +104,20 @@ class MainWindow(QWidget):
     vbox2.addWidget(self.btn2002)
     vbox2.addStretch()
     
+    vbox3 = QVBoxLayout()
+    vbox3.addSpacing(50)
+    vbox3.addWidget(self.rbColor)
+    vbox3.addWidget(self.rbBw)
+    vbox3.addWidget(self.rbChanges)
+    vbox3.addWidget(self.rbUsing)
+    vbox3.addStretch()
+
+
     hbox0 = QHBoxLayout()
     hbox0.addLayout(vbox1)
     hbox0.addLayout(vbox2)
+    hbox0.addSpacing(30)
+    hbox0.addLayout(vbox3)
     
     self.setLayout(hbox0)
 
@@ -125,7 +157,31 @@ class MainWindow(QWidget):
     self.update()
 
 
+  def onColor(self):
+    if self.sender().isChecked():
+      print("Цвет")
+      self.memFrame.setMode(1)
+    
+  def onBw(self):
+    if self.sender().isChecked():
+      print("Черно-белый")
+      self.memFrame.setMode(2)
 
+    
+  def onChanges(self):
+    if self.sender().isChecked():
+      print("Изменения")
+      self.memFrame.setMode(3)
+
+    
+  def onUsing(self):
+    if self.sender().isChecked():
+      print("Пользование")
+      self.memFrame.setMode(4)
+
+    
+    
+    
 
 if __name__ == "__main__":
   try:
