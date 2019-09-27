@@ -117,7 +117,9 @@ class MemFrame(QWidget):
     Принимает новое значение содержимого памяти
     '''
     self.address = "0x{:08X}".format(startaddress)
-    self.prevContent = bytearray(self.content)
+    
+    if self.content != None:
+      self.prevContent = self.content[:]
     self.content = content
     self.update()
 
@@ -157,6 +159,9 @@ class MemFrame(QWidget):
 
 
   def showChanges(self, qp):
+    '''
+    Отмечает изменения относительно предыдущего состояния памяти
+    '''
     if self.prevContent == None:
       for y in range(256):
         for x in range(256):
@@ -164,21 +169,25 @@ class MemFrame(QWidget):
             qp.setPen(Qt.black)
           else:
             qp.setPen(Qt.lightGray)
+      
+          qp.drawPoint(X0 + x, Y0 + y)
     else:
       for y in range(256):
         for x in range(256):
           if (self.content[y * 256 + x]) == (self.prevContent[y * 256 + x]):
-            print()
             qp.setPen(Qt.black)
           else:
-            qp.setPen(Qt.lightGray)
+            qp.setPen(Qt.green)
 
-    qp.drawPoint(X0 + x, Y0 + y)
+          qp.drawPoint(X0 + x, Y0 + y)
 
 
   def showUsing(self, qp):
+    '''
+    Накапливает изменения состояния памяти
+    '''
     pass
-
+    
 
   def showNothing(self, qp):
     pass
