@@ -13,7 +13,7 @@ from PyQt5.QtCore    import (Qt, QRect)
 
 
 # Смещение изображения памяти
-X0 = 60
+X0 = 50
 Y0 = 50
 
 # Размер картинки отображения памяти
@@ -59,17 +59,18 @@ class MemFrame(QWidget):
     qp.drawLine(X0 + 0xC0,  Y0 - 2, X0 + 0xC0,  Y0 - 7)
     qp.drawLine(X0 + 0x100, Y0 - 2, X0 + 0x100, Y0 - 7)
     
-    rect = QRect(0, Y0 - 25, 35, 20)
-    rect.moveLeft(X0 - 15)
+    rect = QRect(0, Y0 - 25, 35, 14)
+    rect.moveLeft(X0 - 17)
     qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "0")
-    rect.moveLeft(X0 - 15 + 0x40)
+    rect.moveLeft(X0 - 17 + 0x40)
     qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "40")
-    rect.moveLeft(X0 - 15 + 0x80)
+    rect.moveLeft(X0 - 17 + 0x80)
     qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "80")
-    rect.moveLeft(X0 - 15 + 0xC0)
+    rect.moveLeft(X0 - 17 + 0xC0)
     qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "C0")
-    rect.moveLeft(X0 - 15 + 0x100)
+    rect.moveLeft(X0 - 17 + 0x100)
     qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "100")
+    #qp.drawRect(rect)
 
     # Левая шкала
     qp.drawLine(X0 - 7, Y0,         X0 - 2, Y0)
@@ -78,7 +79,7 @@ class MemFrame(QWidget):
     qp.drawLine(X0 - 7, Y0 + 0xC0,  X0 - 2, Y0 + 0xC0)
     qp.drawLine(X0 - 7, Y0 + 0x100, X0 - 2, Y0 +0x100)
     
-    rect = QRect(0, 0, 54, 14)
+    rect = QRect(0, 0, 40, 14)
     rect.moveTop(Y0 - 7)
     qp.drawText(rect, (Qt.AlignRight | Qt.AlignVCenter), "0")
     rect.moveTop(Y0 - 7 + 0x40)

@@ -7,7 +7,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QFrame)
+from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QHBoxLayout, QFrame, QPushButton)
 from PyQt5.QtGui     import QFont
 from PyQt5.QtCore    import QTimer
 
@@ -42,7 +42,7 @@ LENGTH = 0x10000
 #START = 0x10000000
 
 # RAM
-START = 0x20000000
+#START = 0x20000000
 #START = 0x20010000
 #START = 0x20020000
 
@@ -56,23 +56,73 @@ class MainWindow(QWidget):
     self.setToolTip("Байты, со значением равным 0x00, отображаются белым цветом, остальные -- серым")
     QToolTip.setFont(QFont("SansSerif", 8))
 
+    self.startaddress = 0x10000000
+
     self.contentProvider = contentProvider
-
     self.memFrame = MemFrame()
+    
+    self.btn1000 = QPushButton("0x10000000")
+    self.btn2000 = QPushButton("0x20000000")
+    self.btn2001 = QPushButton("0x20010000")
+    self.btn2002 = QPushButton("0x20020000")
 
+    self.btn1000.clicked.connect(self.on1000)
+    self.btn2000.clicked.connect(self.on2000)
+    self.btn2001.clicked.connect(self.on2001)
+    self.btn2002.clicked.connect(self.on2002)
+    
+    
     vbox1 = QVBoxLayout()
     vbox1.addWidget(self.memFrame)
-    self.setLayout(vbox1)
+    
+    vbox2 = QVBoxLayout()
+    vbox2.addSpacing(50)
+    vbox2.addWidget(self.btn1000)
+    vbox2.addWidget(self.btn2000)
+    vbox2.addWidget(self.btn2001)
+    vbox2.addWidget(self.btn2002)
+    vbox2.addStretch()
+    
+    hbox0 = QHBoxLayout()
+    hbox0.addLayout(vbox1)
+    hbox0.addLayout(vbox2)
+    
+    self.setLayout(hbox0)
+
+
+
+  def update(self):
+    content = self.contentProvider.getContent(self.startaddress, LENGTH)
+    if content != None:
+      self.memFrame.newContent(content, self.startaddress)
+
 
 
   def onTimer(self):
     '''
     Периодически опрашивает источник данных провайдера и отображает полученный контент
     '''
-    content = self.contentProvider.getContent(START, LENGTH)
-  
-    if content != None:
-      self.memFrame.newContent(content, START)
+    self.update()
+
+
+  def on1000(self):
+    self.startaddress = 0x10000000
+    self.update()
+
+
+  def on2000(self):
+    self.startaddress = 0x20000000
+    self.update()
+
+
+  def on2001(self):
+    self.startaddress = 0x20010000
+    self.update()
+
+
+  def on2002(self):
+    self.startaddress = 0x20020000
+    self.update()
 
 
 
