@@ -7,7 +7,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout)
+from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QFrame)
 from PyQt5.QtGui     import QFont
 from PyQt5.QtCore    import QTimer
 
@@ -60,9 +60,9 @@ class MainWindow(QWidget):
 
     self.memFrame = MemFrame()
 
-    vbox = QVBoxLayout()
-    vbox.addWidget(self.memFrame)
-    self.setLayout(vbox)
+    vbox1 = QVBoxLayout()
+    vbox1.addWidget(self.memFrame)
+    self.setLayout(vbox1)
 
 
   def onTimer(self):
@@ -72,7 +72,7 @@ class MainWindow(QWidget):
     content = self.contentProvider.getContent(START, LENGTH)
   
     if content != None:
-      self.memFrame.newContent(content, )
+      self.memFrame.newContent(content, START)
 
 
 

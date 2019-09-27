@@ -6,15 +6,15 @@
 
 import random
 
-from PyQt5.QtWidgets import (QWidget, QFrame)
+from PyQt5.QtWidgets import (QWidget)
 from PyQt5.QtGui     import (QPainter, QPalette, QPen, QColor, QFont)
-from PyQt5.QtCore    import Qt
+from PyQt5.QtCore    import (Qt, QRect)
 
 
 
 # Смещение изображения памяти
-X0 = 100
-Y0 = 20
+X0 = 60
+Y0 = 50
 
 # Размер картинки отображения памяти
 IMAGEWIDTH  = 256
@@ -29,7 +29,9 @@ class MemFrame(QWidget):
   def __init__(self, parent=None):
     QWidget.__init__(self, parent)
     self.content = None
-    self.setFixedSize(X0 + IMAGEWIDTH, Y0 + IMAGEHEIGHT)
+    self.setFixedSize(X0 + IMAGEWIDTH + 35, Y0 + IMAGEHEIGHT + 20)
+
+    self.address = ""
 
 
   def paintEvent(self, e):
@@ -37,17 +39,56 @@ class MemFrame(QWidget):
     Подновляет (рисует) изображение памяти по-пиксельно
     '''
     
-    # Подписываем адреса
     qp = QPainter()
-    qp.begin(self)      
+    qp.begin(self)
 
-    # qp.setPen(QColor("Green"))
+    # Подписываем адреса
+    qp.setFont(QFont('DejaVu Sans Bold', 12, QFont.Bold))
+    #qp.setPen(QColor("Blue"))
+    rect = QRect(X0 + 0x80 - 60, 0, 120, 20)
+    #qp.drawRect(rect)
+    qp.drawText(rect, (Qt.AlignVCenter | Qt.AlignHCenter), self.address)
+
     qp.setFont(QFont('DejaVu Sans', 10))
-    qp.drawText(0, 0, X0, Y0, (Qt.AlignRight | Qt.AlignVCenter), "+0")
-    qp.drawText(0, 0, X0, Y0 + 0x40, (Qt.AlignRight | Qt.AlignVCenter), "+4000")
-    #qp.drawText(X0, Y0 + 0x80, Qt.AlignLeft, "+8000")
-    #qp.drawText(X0, Y0 + 0xC0, Qt.AlignLeft, "+C000")
-    #qp.drawText(X0, Y0 + 0x100, Qt.AlignLeft, "+10000")
+    #qp.setPen(QColor("Black"))
+
+    # Верхняя шкала
+    qp.drawLine(X0,         Y0 - 2, X0,         Y0 - 7)
+    qp.drawLine(X0 + 0x40,  Y0 - 2, X0 + 0x40,  Y0 - 7)
+    qp.drawLine(X0 + 0x80,  Y0 - 2, X0 + 0x80,  Y0 - 7)
+    qp.drawLine(X0 + 0xC0,  Y0 - 2, X0 + 0xC0,  Y0 - 7)
+    qp.drawLine(X0 + 0x100, Y0 - 2, X0 + 0x100, Y0 - 7)
+    
+    rect = QRect(0, Y0 - 25, 35, 20)
+    rect.moveLeft(X0 - 15)
+    qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "0")
+    rect.moveLeft(X0 - 15 + 0x40)
+    qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "40")
+    rect.moveLeft(X0 - 15 + 0x80)
+    qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "80")
+    rect.moveLeft(X0 - 15 + 0xC0)
+    qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "C0")
+    rect.moveLeft(X0 - 15 + 0x100)
+    qp.drawText(rect, (Qt.AlignBottom | Qt.AlignHCenter), "100")
+
+    # Левая шкала
+    qp.drawLine(X0 - 7, Y0,         X0 - 2, Y0)
+    qp.drawLine(X0 - 7, Y0 + 0x40,  X0 - 2, Y0 + 0x40)
+    qp.drawLine(X0 - 7, Y0 + 0x80,  X0 - 2, Y0 + 0x80)
+    qp.drawLine(X0 - 7, Y0 + 0xC0,  X0 - 2, Y0 + 0xC0)
+    qp.drawLine(X0 - 7, Y0 + 0x100, X0 - 2, Y0 +0x100)
+    
+    rect = QRect(0, 0, 54, 14)
+    rect.moveTop(Y0 - 7)
+    qp.drawText(rect, (Qt.AlignRight | Qt.AlignVCenter), "0")
+    rect.moveTop(Y0 - 7 + 0x40)
+    qp.drawText(rect, (Qt.AlignRight | Qt.AlignVCenter), "4000")
+    rect.moveTop(Y0 - 7 + 0x80)
+    qp.drawText(rect, (Qt.AlignRight | Qt.AlignVCenter), "8000")
+    rect.moveTop(Y0 - 7 + 0xC0)
+    qp.drawText(rect, (Qt.AlignRight | Qt.AlignVCenter), "C000")
+    rect.moveTop(Y0 - 7 + 0x100)
+    qp.drawText(rect, (Qt.AlignRight | Qt.AlignVCenter), "10000")
  
     if self.content == None:
       qp.end()
@@ -81,10 +122,11 @@ class MemFrame(QWidget):
 
 
 
-  def newContent(self, content):
+  def newContent(self, content, startaddress):
     '''
     Принимает новое значение содержимого памяти
     '''
+    self.address = "0x{:08X}".format(startaddress)
     self.content = content
     self.update()
 
