@@ -77,7 +77,6 @@ class UdpProvider:
     length - длина (в байтах)
     '''
     address = start
-    length  = length
    
     answer = []  # Запрошенный объём памяти
     
@@ -86,13 +85,13 @@ class UdpProvider:
       chunk = self.getChunk(address, CHUNKSIZE)
 
       if chunk == None and chunk == b'':
-        print(':(')
+        print('Вообще ничего не вернулось :(')
         return None
       
       if len(chunk) > 0:
         answer += chunk
       else:
-        print("0000")
+        print("Вернулось меньше, чем ожидали.")
 
       address += CHUNKSIZE
       length  -= CHUNKSIZE

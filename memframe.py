@@ -34,7 +34,7 @@ class MemFrame(QWidget):
     self.prevContent = None
 
     self.mode = 1
-    self.modeSelector = {0:self.showNothing, 1:self.showInColor, 2:self.showInBw, 3:self.showChanges, 4:self.showUsing}
+    self.modeSelector = {1:self.showInColor, 2:self.showInBw, 3:self.showChanges, 4:self.showUsing}
 
     self.address = ""
 
@@ -104,7 +104,7 @@ class MemFrame(QWidget):
       return
   
     try:
-      self.modeSelector.get(self.mode, self.showNothing)(qp)
+      self.modeSelector.get(self.mode)(qp)
     except IndexError:
       pass
 
@@ -127,6 +127,11 @@ class MemFrame(QWidget):
 
   def setMode(self, mode):
     self.mode = mode
+    
+    if mode == 4:
+      # Только для перехода в режим накопления изменений
+      self.clearAccumulator()
+
 
 
   def showInColor(self, qp):
@@ -163,20 +168,26 @@ class MemFrame(QWidget):
     Отмечает изменения относительно предыдущего состояния памяти
     '''
     if self.prevContent == None:
+      # Первый раз
       for y in range(256):
         for x in range(256):
           if self.content[y * 256 + x] == 0xFF:
+            # Содержимое памяти по этому адресу не изменилось
             qp.setPen(Qt.black)
           else:
-            qp.setPen(Qt.lightGray)
+            # Есть изменения содержимого памяти по этому адресу
+            qp.setPen(Qt.grееn)
       
           qp.drawPoint(X0 + x, Y0 + y)
     else:
+     # Второй и следущие разы
       for y in range(256):
         for x in range(256):
           if (self.content[y * 256 + x]) == (self.prevContent[y * 256 + x]):
+            # Содержимое памяти по этому адресу не изменилось
             qp.setPen(Qt.black)
           else:
+            # Есть изменения содержимого памяти по этому адресу
             qp.setPen(Qt.green)
 
           qp.drawPoint(X0 + x, Y0 + y)
@@ -186,12 +197,45 @@ class MemFrame(QWidget):
     '''
     Накапливает изменения состояния памяти
     '''
-    pass
+    if self.prevContent == None:
+      # Первый раз
+      for y in range(256):
+        for x in range(256):
+          if self.content[y * 256 + x] == 0xFF:
+            # Содержимое памяти по этому адресу не изменилось
+            qp.setPen(Qt.black)
+          else:
+            # Есть изменения содержимого памяти по этому адресу
+            qp.setPen(Qt.green)
+            self.accumulator[y * 256 + x] += 1            
+      
+          qp.drawPoint(X0 + x, Y0 + y)
+    else:
+     # Второй и следущие разы
+      for y in range(256):
+        for x in range(256):
+          if (self.content[y * 256 + x]) == (self.prevContent[y * 256 + x]):
+            # Содержимое памяти по этому адресу не изменилось
+            if self.accumulator[y * 256 + x] == 0:
+              # Изменений по этому адресу в прошлом не было
+              qp.setPen(Qt.black)
+            else:
+              # В прошлом наблюдались изменения по этому адресу
+              qp.setPen(Qt.gray)
+          else:
+            # Есть изменения содержимого памяти по этому адресу
+            qp.setPen(Qt.green)
+            self.accumulator[y * 256 + x] += 1
+          
+          qp.drawPoint(X0 + x, Y0 + y)
     
 
-  def showNothing(self, qp):
-    pass
-
+  
+  def clearAccumulator(self):
+    '''
+    Обнуляет массив накопления изменений
+    '''
+    self.accumulator = [0 for i in range(IMAGEWIDTH * IMAGEHEIGHT)]
 
 
 
