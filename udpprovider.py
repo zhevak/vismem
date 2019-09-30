@@ -84,7 +84,7 @@ class UdpProvider:
     while length >= CHUNKSIZE:
       chunk = self.getChunk(address, CHUNKSIZE)
 
-      if chunk == None and chunk == b'':
+      if chunk == None or chunk == b'':
         print('Вообще ничего не вернулось :(')
         return None
       
@@ -101,7 +101,7 @@ class UdpProvider:
     if length > 0:
       chunk = self.getChunk(address, length)
       
-      if chunk == None and chunk == b'':
+      if chunk == None or chunk == b'':
         print(':(')
         return None
       
