@@ -60,7 +60,6 @@ class UdpProvider:
       except:
         attempt -= 1
         print("Осталось попыток {}".format(attempt))
-        print("EXCEPT")
       
       else:
         #print("OK")
@@ -85,7 +84,7 @@ class UdpProvider:
       chunk = self.getChunk(address, CHUNKSIZE)
 
       if chunk == None or chunk == b'':
-        print('Вообще ничего не вернулось :(')
+        print('Вообще ничего не вернулось :(\n')
         return None
       
       if len(chunk) > 0:
