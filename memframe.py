@@ -4,8 +4,6 @@
 ''' memframe.py '''
 
 
-import random
-
 from PyQt5.QtWidgets import (QWidget)
 from PyQt5.QtGui     import (QPainter, QPalette, QPen, QColor, QFont)
 from PyQt5.QtCore    import (Qt, pyqtSignal, QRect, QPoint)
@@ -38,7 +36,7 @@ class MemFrame(QWidget):
     self.mode = 1
     self.modeSelector = {1:self.showInColor, 2:self.showInBw, 3:self.showChanges, 4:self.showUsing}
 
-    self.startaddress = 0
+    self.startAddress = 0
     self.address = ""
 
     self.setFixedSize(X0 + IMAGEWIDTH + 35, Y0 + IMAGEHEIGHT + 20)
@@ -116,13 +114,19 @@ class MemFrame(QWidget):
 
 
 
-  def newContent(self, content, startaddress):
+  def setStartAddress(self, startAddress):
+    '''
+    Устанавливает новое значение начального адреса
+    '''
+    self.startAddress = startAddress
+    self.address = "0x{:08X}".format(startAddress)
+ 
+
+
+  def setContent(self, content):
     '''
     Принимает новое значение содержимого памяти
     '''
-    self.startaddress = startaddress
-    self.address = "0x{:08X}".format(startaddress)
-    
     if self.content != None:
       self.prevContent = self.content[:]
     self.content = content
@@ -248,8 +252,9 @@ class MemFrame(QWidget):
     '''
     Обработчик изменения мышинного указателя
     '''
-    position = event.pos() - QPoint(50, 50)
-    self.magnifyPositionChanged.emit(position)  # Отправляем сигнал
+    position = event.pos() - QPoint(X0 + 2, Y0 + 2)
+    if (0 <= position.x() <= 255) and (0 <= position.y() <= 255):
+      self.magnifyPositionChanged.emit(position)  # Отправляем сигнал
 
 
 

@@ -7,14 +7,15 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QRadioButton, QButtonGroup)
+from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QHBoxLayout, QGridLayout,
+                             QFrame, QPushButton, QRadioButton, QButtonGroup)
 from PyQt5.QtGui     import QFont
 from PyQt5.QtCore    import (QTimer, QPoint)
 
 # from contentprovider import ContentProvider
 from udpprovider import UdpProvider
-from memframe        import MemFrame
-
+from memframe    import MemFrame
+from magnify     import Magnify
 
 PERIOD = 1000
 
@@ -58,11 +59,14 @@ class MainWindow(QWidget):
     QToolTip.setFont(QFont("SansSerif", 8))
 
     self.startaddress = 0x10000000
+    self.magnifyOffset = 0
     self.mode = 0
 
     self.contentProvider = contentProvider
-    self.memFrame = MemFrame()
-    self.memFrame.magnifyPositionChanged.connect(self.onMagnifyPositionChanged)
+    self.memframe = MemFrame()
+    self.memframe.magnifyPositionChanged.connect(self.onMagnifyPositionChanged)
+    
+    self.magnify = Magnify()
     
     self.btn1000 = QPushButton("0x10000000")
     self.btn2000 = QPushButton("0x20000000")
@@ -95,7 +99,7 @@ class MainWindow(QWidget):
     
     # Размещение виджетов на морде
     vbox1 = QVBoxLayout()
-    vbox1.addWidget(self.memFrame)
+    vbox1.addWidget(self.memframe)
     
     vbox3 = QVBoxLayout()
     vbox3.addSpacing(50)
@@ -117,11 +121,9 @@ class MainWindow(QWidget):
     hbox1.addLayout(vbox3)
     hbox1.addLayout(vbox4)
 
-    grid1 = QGridLayout()
-    
     vbox2 = QVBoxLayout()
     vbox2.addLayout(hbox1)
-    vbox2.addLayout(grid1)
+    vbox2.addWidget(self.magnify)
     vbox2.addStretch()
 
     hbox0 = QHBoxLayout()
@@ -130,15 +132,26 @@ class MainWindow(QWidget):
     hbox0.addStretch()
     
     self.setLayout(hbox0)
----------------------
-    hbox0.addSpacing(30)
-    hbox0.addLayout(vbox3)
+    
+    #hbox0.addSpacing(30)
+    #hbox0.addLayout(vbox3)
 
 
   def update(self):
     content = self.contentProvider.getContent(self.startaddress, LENGTH)
     if content != None:
-      self.memFrame.newContent(content, self.startaddress)
+      self.memframe.setContent(content)  # Подновим изображение "квадрата"
+
+      # Подготовим массив значений из памяти для области увеличения (семь строк по семь значений)
+      magnifyContent = [[], [], [], [], [], [], []]
+      
+      for y in range(7):
+        x1 = self.magnifyOffset + (256 * y)
+        x2 = x1 + 7
+        magnifyContent[y] = content[x1:x2]
+      
+      self.magnify.setContent(magnifyContent)
+    
 
 
 
@@ -151,45 +164,54 @@ class MainWindow(QWidget):
 
   def on1000(self):
     self.startaddress = 0x10000000
+    self.memframe.setStartAddress(self.startaddress)
+    self.magnify.setStartAddress(self.startaddress)
     self.update()
 
 
   def on2000(self):
     self.startaddress = 0x20000000
+    self.memframe.setStartAddress(self.startaddress)
+    self.magnify.setStartAddress(self.startaddress)
     self.update()
 
 
   def on2001(self):
     self.startaddress = 0x20010000
+    self.memframe.setStartAddress(self.startaddress)
+    self.magnify.setStartAddress(self.startaddress)
     self.update()
 
 
   def on2002(self):
     self.startaddress = 0x20020000
+    self.memframe.setStartAddress(self.startaddress)
+    self.magnify.setStartAddress(self.startaddress)
     self.update()
 
 
   def onColor(self):
     if self.sender().isChecked():
       #print("Цвет")
-      self.memFrame.setMode(1)
+      self.memframe.setMode(1)
+    
     
   def onBw(self):
     if self.sender().isChecked():
       #print("Черно-белый")
-      self.memFrame.setMode(2)
+      self.memframe.setMode(2)
 
     
   def onChanges(self):
     if self.sender().isChecked():
       #print("Изменения")
-      self.memFrame.setMode(3)
+      self.memframe.setMode(3)
 
     
   def onUsing(self):
     if self.sender().isChecked():
       #print("Пользование")
-      self.memFrame.setMode(4)
+      self.memframe.setMode(4)
 
 
   def onMagnifyPositionChanged(self, pos: QPoint):
@@ -197,9 +219,30 @@ class MainWindow(QWidget):
     Обработчик измение адреса по указателю на "квадрате" памяти
     pos -- xy-координаты указателя на "квадрате" памяти
     '''
-    # print(pos)
+    #print(pos)
     
-    
+    # Крректируем позицию чтобы не вылезьти за края "квадрата"
+    x0 = pos.x() - 3   # Смещение на три строки вверх
+    y0 = pos.y() - 3   # Смещение на три строки влево
+
+    if x0 < 0:
+      x0 = 0
+
+    if x0 > 249:
+      x0 = 249
+
+    if y0 < 0:
+      y0 = 0
+      
+    if y0 > 249:
+      y0 = 249
+
+    self.magnifyOffset = y0 * 256 + x0  # Начальный адрес области увеличения    
+    addr = self.startaddress + self.magnifyOffset
+    #print("{:08X}".format(self.magnifyStartAddress))
+    self.magnify.setStartAddress(addr)
+
+
 
 if __name__ == "__main__":
   try:
