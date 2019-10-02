@@ -97,31 +97,42 @@ class MainWindow(QWidget):
     vbox1 = QVBoxLayout()
     vbox1.addWidget(self.memFrame)
     
-    vbox2 = QVBoxLayout()
-    vbox2.addSpacing(50)
-    vbox2.addWidget(self.btn1000)
-    vbox2.addWidget(self.btn2000)
-    vbox2.addWidget(self.btn2001)
-    vbox2.addWidget(self.btn2002)
-    vbox2.addStretch()
-    
     vbox3 = QVBoxLayout()
     vbox3.addSpacing(50)
-    vbox3.addWidget(self.rbColor)
-    vbox3.addWidget(self.rbBw)
-    vbox3.addWidget(self.rbChanges)
-    vbox3.addWidget(self.rbUsing)
+    vbox3.addWidget(self.btn1000)
+    vbox3.addWidget(self.btn2000)
+    vbox3.addWidget(self.btn2001)
+    vbox3.addWidget(self.btn2002)
     vbox3.addStretch()
+    
+    vbox4 = QVBoxLayout()
+    vbox4.addSpacing(50)
+    vbox4.addWidget(self.rbColor)
+    vbox4.addWidget(self.rbBw)
+    vbox4.addWidget(self.rbChanges)
+    vbox4.addWidget(self.rbUsing)
+    vbox4.addStretch()
 
+    hbox1 = QHBoxLayout()
+    hbox1.addLayout(vbox3)
+    hbox1.addLayout(vbox4)
+
+    grid1 = QGridLayout()
+    
+    vbox2 = QVBoxLayout()
+    vbox2.addLayout(hbox1)
+    vbox2.addLayout(grid1)
+    vbox2.addStretch()
 
     hbox0 = QHBoxLayout()
     hbox0.addLayout(vbox1)
     hbox0.addLayout(vbox2)
-    hbox0.addSpacing(30)
-    hbox0.addLayout(vbox3)
+    hbox0.addStretch()
     
     self.setLayout(hbox0)
-
+---------------------
+    hbox0.addSpacing(30)
+    hbox0.addLayout(vbox3)
 
 
   def update(self):
