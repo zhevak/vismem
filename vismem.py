@@ -55,7 +55,7 @@ class MainWindow(QWidget):
     QWidget.__init__(self)
 
     self.setWindowTitle("Визуализатор содержимого памяти")
-    self.setToolTip("Байты, со значением равным 0x00, отображаются белым цветом, остальные -- серым")
+    #self.setToolTip("Байты, со значением равным 0x00, отображаются белым цветом, остальные -- серым")
     QToolTip.setFont(QFont("SansSerif", 8))
 
     self.startaddress = 0x10000000

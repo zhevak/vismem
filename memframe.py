@@ -150,10 +150,17 @@ class MemFrame(QWidget):
     for y in range(256):
       for x in range(256):
         c = self.content[y * 256 + x]
+        '''
         r = (c & 0xE0)
         g = (c & 0x1C) << 3
         b = (c & 0x03) << 6
         qp.setPen(QPen(QColor(r, g, b)))
+        '''
+        r = (c >> 5) & 0x07
+        g = (c >> 2) & 0x07
+        b = (c)      & 0x03
+        qp.setPen(QColor(r << 5, g << 5, b << 6))
+
         qp.drawPoint(X0 + x, Y0 + y)
 
 
@@ -248,11 +255,11 @@ class MemFrame(QWidget):
 
 
 
-  def mouseMoveEvent(self, event):
+  def mousePressEvent(self, event):
     '''
-    Обработчик изменения мышинного указателя
+    Обработчик щелчка мышкой по "квадрату"
     '''
-    position = event.pos() - QPoint(X0 + 2, Y0 + 2)
+    position = event.pos() - QPoint(X0 + 2, Y0 + 3)
     if (0 <= position.x() <= 255) and (0 <= position.y() <= 255):
       self.magnifyPositionChanged.emit(position)  # Отправляем сигнал
 

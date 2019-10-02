@@ -93,10 +93,25 @@ class Magnify(QWidget):
     #qp.setFont(QFont('DejaVu Sans', 10))
     for y in range(7):
       for x in range(7):
-        rect = QRect((x * dX + X0), (y * dY + Y0), dX, dY)
-        qp.drawRect(rect)
+        rect = QRect((x * dX + X0), (y * dY + Y0), (dX - 1), (dY - 1))
         
         if self.content != None:
+          c = self.content[y][x]
+          r = (c >> 5) & 0x07
+          g = (c >> 2) & 0x07
+          b = (c)      & 0x03
+
+          #qp.setPen(QPen(QColor(r, g, b)))
+          color = QColor(r << 5, g << 5, b << 6)
+          qp.fillRect(rect, color)
+          qp.drawRect(rect)
+          
+          bright = r * 28 + g * 61 + b * 11
+          if bright < (656 / 2):
+            qp.setPen(Qt.white)
+          else:
+            qp.setPen(Qt.black)
+          
           txt = "{:02X}".format(self.content[y][x])
           qp.drawText(rect, (Qt.AlignVCenter | Qt.AlignHCenter), txt)
 
