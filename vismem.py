@@ -9,7 +9,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout, QHBoxLayout, QFrame, QPushButton, QRadioButton, QButtonGroup)
 from PyQt5.QtGui     import QFont
-from PyQt5.QtCore    import QTimer
+from PyQt5.QtCore    import (QTimer, QPoint)
 
 # from contentprovider import ContentProvider
 from udpprovider import UdpProvider
@@ -62,6 +62,7 @@ class MainWindow(QWidget):
 
     self.contentProvider = contentProvider
     self.memFrame = MemFrame()
+    self.memFrame.magnifyPositionChanged.connect(self.onMagnifyPositionChanged)
     
     self.btn1000 = QPushButton("0x10000000")
     self.btn2000 = QPushButton("0x20000000")
@@ -179,7 +180,13 @@ class MainWindow(QWidget):
       #print("Пользование")
       self.memFrame.setMode(4)
 
-    
+
+  def onMagnifyPositionChanged(self, pos: QPoint):
+    '''
+    Обработчик измение адреса по указателю на "квадрате" памяти
+    pos -- xy-координаты указателя на "квадрате" памяти
+    '''
+    # print(pos)
     
     
 

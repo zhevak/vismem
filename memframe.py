@@ -8,7 +8,7 @@ import random
 
 from PyQt5.QtWidgets import (QWidget)
 from PyQt5.QtGui     import (QPainter, QPalette, QPen, QColor, QFont)
-from PyQt5.QtCore    import (Qt, QRect)
+from PyQt5.QtCore    import (Qt, pyqtSignal, QRect, QPoint)
 
 
 
@@ -27,6 +27,8 @@ class MemFrame(QWidget):
   Квадрат изображения
   '''
 
+  magnifyPositionChanged = pyqtSignal(QPoint)  # Сигнал с параметром
+
 
   def __init__(self, parent=None):
     QWidget.__init__(self, parent)
@@ -36,9 +38,11 @@ class MemFrame(QWidget):
     self.mode = 1
     self.modeSelector = {1:self.showInColor, 2:self.showInBw, 3:self.showChanges, 4:self.showUsing}
 
+    self.startaddress = 0
     self.address = ""
 
     self.setFixedSize(X0 + IMAGEWIDTH + 35, Y0 + IMAGEHEIGHT + 20)
+    self.mouseTracking = True    
 
 
 
@@ -116,6 +120,7 @@ class MemFrame(QWidget):
     '''
     Принимает новое значение содержимого памяти
     '''
+    self.startaddress = startaddress
     self.address = "0x{:08X}".format(startaddress)
     
     if self.content != None:
@@ -236,6 +241,15 @@ class MemFrame(QWidget):
     Обнуляет массив накопления изменений
     '''
     self.accumulator = [0 for i in range(IMAGEWIDTH * IMAGEHEIGHT)]
+
+
+
+  def mouseMoveEvent(self, event):
+    '''
+    Обработчик изменения мышинного указателя
+    '''
+    position = event.pos() - QPoint(50, 50)
+    self.magnifyPositionChanged.emit(position)  # Отправляем сигнал
 
 
 
